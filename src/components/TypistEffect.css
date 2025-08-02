@@ -1,0 +1,34 @@
+.typist-effect {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  display: inline-block;
+  position: relative;
+}
+
+.typist-text {
+  color: inherit;
+}
+
+.typist-cursor {
+  color: #007aff;
+  font-weight: 300;
+  margin-left: 1px;
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+.typist-cursor.hidden {
+  opacity: 0;
+}
+
+.typist-cursor.visible {
+  opacity: 1;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Figma export optimizations */
+.typist-effect.figma-export {
+  font-family: inherit;
+}
