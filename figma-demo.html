@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typist Effect for Figma</title>
+    <link rel="stylesheet" href="./dist/style.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        
+        .demo-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .demo-section h3 {
+            margin: 0 0 16px 0;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .control-group label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .control-group input, .control-group select {
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        button {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #0056cc;
+        }
+        
+        .container {
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #iphone-container {
+            min-height: 600px;
+        }
+        
+        .preset-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        
+        .preset-buttons button {
+            background: #f0f0f0;
+            color: #333;
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+        
+        .preset-buttons button:hover {
+            background: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <!-- iPhone Keyboard Demo -->
+    <div class="demo-section">
+        <h3>📱 iPhone Keyboard Style</h3>
+        <div class="preset-buttons">
+            <button onclick="loadPreset('travel')">Travel Query</button>
+            <button onclick="loadPreset('food')">Food Order</button>
+            <button onclick="loadPreset('work')">Work Message</button>
+            <button onclick="loadPreset('social')">Social Post</button>
+        </div>
+        <div class="controls">
+            <div class="control-group">
+                <label>Base Text:</label>
+                <input type="text" id="baseText" value="I want" style="width: 120px;">
+            </div>
+            <div class="control-group">
+                <label>Typing Speed (ms):</label>
+                <input type="number" id="typingSpeed" value="120" min="50" max="500" style="width: 80px;">
+            </div>
+            <div class="control-group">
+                <label>Pause Duration (ms):</label>
+                <input type="number" id="pauseDuration" value="2000" min="500" max="5000" style="width: 80px;">
+            </div>
+            <button onclick="updateiPhone()">Update</button>
+        </div>
+        <div id="iphone-container" class="container"></div>
+    </div>
+
+    <!-- Basic Typist Demo -->
+    <div class="demo-section">
+        <h3>✨ Basic Typist Effect</h3>
+        <div class="preset-buttons">
+            <button onclick="loadBasicPreset('marketing')">Marketing</button>
+            <button onclick="loadBasicPreset('code')">Code Demo</button>
+            <button onclick="loadBasicPreset('welcome')">Welcome</button>
+            <button onclick="loadBasicPreset('custom')">Custom</button>
+        </div>
+        <div class="controls">
+            <div class="control-group">
+                <label>Text Sequence (comma separated):</label>
+                <input type="text" id="textSequence" value="Hello World!,Welcome to Figma,Start designing..." style="width: 300px;">
+            </div>
+            <div class="control-group">
+                <label>Speed (ms):</label>
+                <input type="number" id="basicSpeed" value="80" min="30" max="300" style="width: 80px;">
+            </div>
+            <div class="control-group">
+                <label>Style:</label>
+                <select id="basicStyle">
+                    <option value="">Default</option>
+                    <option value="code-style">Code</option>
+                    <option value="marketing-style">Marketing</option>
+                </select>
+            </div>
+            <button onclick="updateBasic()">Update</button>
+        </div>
+        <div id="basic-container" class="container"></div>
+    </div>
+
+    <!-- React Dependencies -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Typist Effect Bundle -->
+    <script src="./dist/typist-effect.umd.js"></script>
+    
+    <script>
+        // Current suggestions for iPhone demo
+        let currentSuggestions = ["", " to", " to go", " to go to LA"];
+        
+        // Preset configurations
+        const presets = {
+            travel: {
+                baseText: "I want",
+                suggestions: ["", " to", " to go", " to go to LA"]
+            },
+            food: {
+                baseText: "I'm craving",
+                suggestions: ["", " some", " some pizza", " some pizza tonight"]
+            },
+            work: {
+                baseText: "Can we",
+                suggestions: ["", " meet", " meet at", " meet at 3pm"]
+            },
+            social: {
+                baseText: "Just posted",
+                suggestions: ["", " a", " a new", " a new photo"]
+            }
+        };
+        
+        const basicPresets = {
+            marketing: ["Build faster", "Ship smarter", "Scale better", "Dream bigger"],
+            code: ["const hello = 'world';", "function greet() {}", "console.log('Hello!');"],
+            welcome: ["Welcome!", "Let's get started", "Create something amazing"],
+            custom: ["Your text here", "Customize this", "Make it yours"]
+        };
+        
+        function loadPreset(presetName) {
+            const preset = presets[presetName];
+            if (preset) {
+                document.getElementById('baseText').value = preset.baseText;
+                currentSuggestions = preset.suggestions;
+                updateiPhone();
+            }
+        }
+        
+        function loadBasicPreset(presetName) {
+            const preset = basicPresets[presetName];
+            if (preset) {
+                document.getElementById('textSequence').value = preset.join(',');
+                updateBasic();
+            }
+        }
+        
+        function updateiPhone() {
+            const container = document.getElementById('iphone-container');
+            const baseText = document.getElementById('baseText').value;
+            const typingSpeed = parseInt(document.getElementById('typingSpeed').value);
+            const pauseDuration = parseInt(document.getElementById('pauseDuration').value);
+            
+            // Clear container
+            container.innerHTML = '';
+            
+            // Render new component
+            window.renderIPhoneTypistEffect(container, {
+                baseText: baseText,
+                suggestions: currentSuggestions,
+                typingSpeed: typingSpeed,
+                pauseDuration: pauseDuration,
+                loop: true,
+                className: "figma-export"
+            });
+        }
+        
+        function updateBasic() {
+            const container = document.getElementById('basic-container');
+            const textSequence = document.getElementById('textSequence').value.split(',').map(s => s.trim());
+            const speed = parseInt(document.getElementById('basicSpeed').value);
+            const style = document.getElementById('basicStyle').value;
+            
+            // Clear container
+            container.innerHTML = '';
+            
+            // Render new component
+            window.renderTypistEffect(container, {
+                textSequence: textSequence,
+                typingSpeed: speed,
+                pauseDuration: 1500,
+                loop: true,
+                showCursor: true,
+                className: `figma-export ${style}`
+            });
+        }
+        
+        // Initialize with default values
+        window.addEventListener('DOMContentLoaded', function() {
+            updateiPhone();
+            updateBasic();
+        });
+        
+        // Auto-update when typing in inputs
+        document.getElementById('baseText').addEventListener('input', updateiPhone);
+        document.getElementById('typingSpeed').addEventListener('input', updateiPhone);
+        document.getElementById('pauseDuration').addEventListener('input', updateiPhone);
+        
+        document.getElementById('textSequence').addEventListener('input', updateBasic);
+        document.getElementById('basicSpeed').addEventListener('input', updateBasic);
+        document.getElementById('basicStyle').addEventListener('change', updateBasic);
+    </script>
+</body>
+</html>

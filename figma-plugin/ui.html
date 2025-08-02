@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Inter, sans-serif;
+            margin: 0;
+            padding: 16px;
+            background: #f8f8f8;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .header h2 {
+            margin: 0 0 8px 0;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .header p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section h3 {
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .section p {
+            margin: 0 0 12px 0;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        button {
+            width: 100%;
+            background: #18A0FB;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+        
+        button:hover {
+            background: #0084E0;
+        }
+        
+        button.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        button.secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .url-section {
+            background: #f8f8f8;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 12px 0;
+        }
+        
+        .url-section code {
+            font-size: 11px;
+            color: #666;
+            word-break: break-all;
+            display: block;
+            margin-top: 4px;
+        }
+        
+        .steps {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .steps li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+        }
+        
+        .steps li:last-child {
+            border-bottom: none;
+        }
+        
+        .steps li strong {
+            color: #333;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 12px 0;
+            font-size: 12px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>🎯 Typist Effect Components</h2>
+        <p>Add animated typing effects to your Figma designs</p>
+    </div>
+    
+    <div class="section">
+        <h3>📱 iPhone Keyboard Style</h3>
+        <p>Complete iPhone interface with progressive text suggestions, just like in the iOS keyboard.</p>
+        <button onclick="createFrame('iphone')">Create iPhone Frame</button>
+        
+        <div class="url-section">
+            <strong>Demo URL:</strong>
+            <code id="iphone-url">https://your-domain.com/figma-demo.html#iphone</code>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h3>✨ Basic Typist Effect</h3>
+        <p>Flexible typing animation perfect for hero text, loading states, and interactive prototypes.</p>
+        <button onclick="createFrame('basic')">Create Basic Frame</button>
+        
+        <div class="url-section">
+            <strong>Demo URL:</strong>
+            <code id="basic-url">https://your-domain.com/figma-demo.html#basic</code>
+        </div>
+    </div>
+    
+    <div class="warning">
+        <strong>⚠️ Setup Required:</strong> You need to host the HTML file online first. See the integration guide for details.
+    </div>
+    
+    <div class="section">
+        <h3>📋 Quick Setup Steps</h3>
+        <ol class="steps">
+            <li><strong>1.</strong> Run <code>npm run build:figma</code> in your project</li>
+            <li><strong>2.</strong> Upload <code>figma-demo.html</code> and <code>dist/</code> folder to a web host</li>
+            <li><strong>3.</strong> Update the URLs above with your hosted URL</li>
+            <li><strong>4.</strong> Click "Create Frame" to add to your design</li>
+            <li><strong>5.</strong> Replace the frame with an Embed component using your URL</li>
+        </ol>
+    </div>
+    
+    <button class="secondary" onclick="cancel()">Close Plugin</button>
+    
+    <script>
+        function createFrame(frameType) {
+            const embedUrl = frameType === 'iphone' 
+                ? document.getElementById('iphone-url').textContent
+                : document.getElementById('basic-url').textContent;
+                
+            parent.postMessage({
+                pluginMessage: {
+                    type: 'create-typist-frame',
+                    frameType: frameType,
+                    embedUrl: embedUrl
+                }
+            }, '*');
+        }
+        
+        function cancel() {
+            parent.postMessage({
+                pluginMessage: { type: 'cancel' }
+            }, '*');
+        }
+        
+        // Allow users to edit URLs
+        document.getElementById('iphone-url').contentEditable = true;
+        document.getElementById('basic-url').contentEditable = true;
+    </script>
+</body>
+</html>
